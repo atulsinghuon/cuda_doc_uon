@@ -1,0 +1,448 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Getting started" href="01Helloworld.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>CUDA on ADA 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=058af07a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="#"><div class="brand">CUDA on ADA 1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+  
+  
+  <span class="sidebar-brand-text">CUDA on ADA 1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="01Helloworld.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02cudaparallel.html">CUDA’s parallel model: Threads,Blocks and Grids.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03mem_mgmt.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04errorhandling.html">Error handling in CUDA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usinglibs.html">Using CUDA libraries</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="welcome-to-cuda-on-ada-s-documentation">
+<h1>Welcome to CUDA on ADA’s documentation!<a class="headerlink" href="#welcome-to-cuda-on-ada-s-documentation" title="Link to this heading">#</a></h1>
+<p>This documentaion will cover the basics of GPU and CUDA (C/c++) for users to efficiently use the GPU hardware currently available on ADA.</p>
+</section>
+<section id="chapters">
+<h1>Chapters<a class="headerlink" href="#chapters" title="Link to this heading">#</a></h1>
+<p>The documentation covers the following aspects of CUDA and GPU programming.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="01Helloworld.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="01Helloworld.html#loading-modules-and-device-properties">Loading modules and device properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01Helloworld.html#submit-a-basic-cuda-program-in-batch">Submit a basic CUDA program in batch.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01Helloworld.html#compiling-a-cuda-program">Compiling a CUDA program</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="02cudaparallel.html">CUDA’s parallel model: Threads,Blocks and Grids.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="02cudaparallel.html#device-code-definition">Device Code definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02cudaparallel.html#launching-a-cuda-kernel">Launching a CUDA Kernel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02cudaparallel.html#thread">Thread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02cudaparallel.html#block">Block</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02cudaparallel.html#grid">Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02cudaparallel.html#obtaining-threads-and-blocks-in-cuda">Obtaining threads and blocks in CUDA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02cudaparallel.html#d-grids-and-blocks">3D grids and blocks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="03mem_mgmt.html">Memory Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="03mem_mgmt.html#_CPPv417cudaMallocManagedPPv6size_t"><code class="docutils literal notranslate"><span class="pre">cudaMallocManaged()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="03mem_mgmt.html#_CPPv410cudaMallocPPv6size_t"><code class="docutils literal notranslate"><span class="pre">cudaMalloc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="03mem_mgmt.html#_CPPv410cudaMemcpyPvPv6size_t14cudaMemcpyKind"><code class="docutils literal notranslate"><span class="pre">cudaMemcpy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="03mem_mgmt.html#scale-vector-example">Scale vector example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="04errorhandling.html">Error handling in CUDA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usinglibs.html">Using CUDA libraries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usinglibs.html#external-libraries-compiled-using-makefiles">External libraries compiled using Makefiles</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="what-is-a-gpu">
+<h1>What is a GPU?<a class="headerlink" href="#what-is-a-gpu" title="Link to this heading">#</a></h1>
+<p>Graphics Processing unit better known as GPU were originally designed for image manipulation on a computer screen. GPUs, or graphics processing units, were originally used to process data for computer displays. As time evolved, GPUs became powerful enough to accelarate scientific computing.</p>
+<p>GPUs are almost always used along with CPUs where the main function of a program is being run by the CPU while specific computation intensive functions assigned to the GPU.</p>
+<p>Hardware wise, a CPU as in a laptop or desktop system may have 8-12 to 24 CPU cores, however, a GPU can go to thousands of processors, all of which can be utilized in parallel with help of some programming.
+The domains of machine learning, neural networks and solving differential equations etc, specifically benefit from a GPU hardware resource as this can significantly outperform a traditional CPU.</p>
+<figure class="align-default">
+<img alt="_images/GPUchip.png" src="_images/GPUchip.png" />
+</figure>
+<figure class="align-default">
+<img alt="_images/cpuvsgpu.png" src="_images/cpuvsgpu.png" />
+</figure>
+<p>The above image also gives an intutive comparison when a computation (passenger) needs to be performed (commuted).</p>
+<p>Lastly, like a CPU, a GPU has separate structures for execution units and memory. This simply means that the process flows for using GPUs is defined differently as follows.</p>
+</section>
+<section id="overview-of-using-gpu-programs">
+<h1>Overview of using GPU programs<a class="headerlink" href="#overview-of-using-gpu-programs" title="Link to this heading">#</a></h1>
+<p>The following steps give a brief of how GPU programs work (or should be written).</p>
+<ol class="arabic simple">
+<li><p>Copy data from CPU memory to GPU memory.</p></li>
+<li><p>Transfer program. (The code that tells the processors of what to do with the device memory.)</p></li>
+<li><p>Load the GPU program , execute on streaming processors (SMs), get cached data from device (GPU) memory; write back the results.</p></li>
+<li><p>Copy the results back to the host memory.</p></li>
+</ol>
+<figure class="align-default">
+<img alt="_images/step1step2.png" src="_images/step1step2.png" />
+</figure>
+<figure class="align-default">
+<img alt="_images/step3.png" src="_images/step3.png" />
+</figure>
+<figure class="align-default">
+<img alt="_images/step4.png" src="_images/step4.png" />
+</figure>
+</section>
+<section id="gpu-resources-at-university-of-nottingham">
+<h1>GPU Resources at University of Nottingham<a class="headerlink" href="#gpu-resources-at-university-of-nottingham" title="Link to this heading">#</a></h1>
+<section id="partitions">
+<h2>Partitions<a class="headerlink" href="#partitions" title="Link to this heading">#</a></h2>
+<p>See the <a class="reference external" href="https://uniofnottm.sharepoint.com/sites/DigitalResearch/SitePages/Ada-Commands-Partitions-and-Resources.aspx#partitions">Partitions link</a> to look at the various hardware resources available for HPC jobs at University of Nottingham.</p>
+<p>There are 3 GPU partitions on this list. Namely,</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>GPU partitions</p></th>
+<th class="head"><p>Properties</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ampereq</p></td>
+<td><p>no permissions</p></td>
+</tr>
+<tr class="row-odd"><td><p>ampere-devq</p></td>
+<td><p>execute</p></td>
+</tr>
+<tr class="row-even"><td><p>ampere-mq</p></td>
+<td><p>write</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="nvidia-a100-card-properties">
+<h2>NVIDIA A100 card properties<a class="headerlink" href="#nvidia-a100-card-properties" title="Link to this heading">#</a></h2>
+<p>As all of these partitions contain the current state-of-the-art NVIDIA A100 cards, they all have the following properties. (obtained from deviceQuerry present in <a class="reference external" href="https://github.com/NVIDIA/cuda-samples">CUDA samples</a>)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>CUDA<span class="w"> </span>Device<span class="w"> </span>Query<span class="w"> </span><span class="o">(</span>Runtime<span class="w"> </span>API<span class="o">)</span><span class="w"> </span>version<span class="w"> </span><span class="o">(</span>CUDART<span class="w"> </span>static<span class="w"> </span>linking<span class="o">)</span>
+Detected<span class="w"> </span><span class="m">1</span><span class="w"> </span>CUDA<span class="w"> </span>Capable<span class="w"> </span>device<span class="o">(</span>s<span class="o">)</span>
+
+Device<span class="w"> </span><span class="m">0</span>:<span class="w"> </span><span class="s2">&quot;NVIDIA A100 80GB PCIe MIG 1g.10gb&quot;</span>
+CUDA<span class="w"> </span>Driver<span class="w"> </span>Version<span class="w"> </span>/<span class="w"> </span>Runtime<span class="w"> </span>Version<span class="w">          </span><span class="m">12</span>.3<span class="w"> </span>/<span class="w"> </span><span class="m">12</span>.1
+CUDA<span class="w"> </span>Capability<span class="w"> </span>Major/Minor<span class="w"> </span>version<span class="w"> </span>number:<span class="w">    </span><span class="m">8</span>.0
+Total<span class="w"> </span>amount<span class="w"> </span>of<span class="w"> </span>global<span class="w"> </span>memory:<span class="w">                 </span><span class="m">9728</span><span class="w"> </span>MBytes<span class="w"> </span><span class="o">(</span><span class="m">10200547328</span><span class="w"> </span>bytes<span class="o">)</span>
+MapSMtoCores<span class="w"> </span><span class="k">for</span><span class="w"> </span>SM<span class="w"> </span><span class="m">8</span>.0<span class="w"> </span>is<span class="w"> </span>undefined.<span class="w">  </span>Default<span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span><span class="m">64</span><span class="w"> </span>Cores/SM
+MapSMtoCores<span class="w"> </span><span class="k">for</span><span class="w"> </span>SM<span class="w"> </span><span class="m">8</span>.0<span class="w"> </span>is<span class="w"> </span>undefined.<span class="w">  </span>Default<span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span><span class="m">64</span><span class="w"> </span>Cores/SM
+<span class="o">(</span><span class="m">14</span><span class="o">)</span><span class="w"> </span>Multiprocessors,<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">64</span><span class="o">)</span><span class="w"> </span>CUDA<span class="w"> </span>Cores/MP:<span class="w">     </span><span class="m">896</span><span class="w"> </span>CUDA<span class="w"> </span>Cores
+GPU<span class="w"> </span>Max<span class="w"> </span>Clock<span class="w"> </span>rate:<span class="w">                            </span><span class="m">1410</span><span class="w"> </span>MHz<span class="w"> </span><span class="o">(</span><span class="m">1</span>.41<span class="w"> </span>GHz<span class="o">)</span>
+Memory<span class="w"> </span>Clock<span class="w"> </span>rate:<span class="w">                             </span><span class="m">1512</span><span class="w"> </span>Mhz
+Memory<span class="w"> </span>Bus<span class="w"> </span>Width:<span class="w">                              </span><span class="m">640</span>-bit
+L2<span class="w"> </span>Cache<span class="w"> </span>Size:<span class="w">                                 </span><span class="m">5242880</span><span class="w"> </span>bytes
+Maximum<span class="w"> </span>Texture<span class="w"> </span>Dimension<span class="w"> </span>Size<span class="w"> </span><span class="o">(</span>x,y,z<span class="o">)</span><span class="w">         </span><span class="nv">1D</span><span class="o">=(</span><span class="m">131072</span><span class="o">)</span>,<span class="w"> </span><span class="nv">2D</span><span class="o">=(</span><span class="m">131072</span>,<span class="w"> </span><span class="m">65536</span><span class="o">)</span>,<span class="w"> </span><span class="nv">3D</span><span class="o">=(</span><span class="m">16384</span>,<span class="w"> </span><span class="m">16384</span>,<span class="w"> </span><span class="m">16384</span><span class="o">)</span>
+Maximum<span class="w"> </span>Layered<span class="w"> </span>1D<span class="w"> </span>Texture<span class="w"> </span>Size,<span class="w"> </span><span class="o">(</span>num<span class="o">)</span><span class="w"> </span>layers<span class="w">  </span><span class="nv">1D</span><span class="o">=(</span><span class="m">32768</span><span class="o">)</span>,<span class="w"> </span><span class="m">2048</span><span class="w"> </span>layers
+Maximum<span class="w"> </span>Layered<span class="w"> </span>2D<span class="w"> </span>Texture<span class="w"> </span>Size,<span class="w"> </span><span class="o">(</span>num<span class="o">)</span><span class="w"> </span>layers<span class="w">  </span><span class="nv">2D</span><span class="o">=(</span><span class="m">32768</span>,<span class="w"> </span><span class="m">32768</span><span class="o">)</span>,<span class="w"> </span><span class="m">2048</span><span class="w"> </span>layers
+Total<span class="w"> </span>amount<span class="w"> </span>of<span class="w"> </span>constant<span class="w"> </span>memory:<span class="w">               </span><span class="m">65536</span><span class="w"> </span>bytes
+Total<span class="w"> </span>amount<span class="w"> </span>of<span class="w"> </span>shared<span class="w"> </span>memory<span class="w"> </span>per<span class="w"> </span>block:<span class="w">       </span><span class="m">49152</span><span class="w"> </span>bytes
+Total<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>registers<span class="w"> </span>available<span class="w"> </span>per<span class="w"> </span>block:<span class="w"> </span><span class="m">65536</span>
+Warp<span class="w"> </span>size:<span class="w">                                     </span><span class="m">32</span>
+Maximum<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>threads<span class="w"> </span>per<span class="w"> </span>multiprocessor:<span class="w">  </span><span class="m">2048</span>
+Maximum<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>threads<span class="w"> </span>per<span class="w"> </span>block:<span class="w">           </span><span class="m">1024</span>
+Max<span class="w"> </span>dimension<span class="w"> </span>size<span class="w"> </span>of<span class="w"> </span>a<span class="w"> </span>thread<span class="w"> </span>block<span class="w"> </span><span class="o">(</span>x,y,z<span class="o">)</span>:<span class="w"> </span><span class="o">(</span><span class="m">1024</span>,<span class="w"> </span><span class="m">1024</span>,<span class="w"> </span><span class="m">64</span><span class="o">)</span>
+Max<span class="w"> </span>dimension<span class="w"> </span>size<span class="w"> </span>of<span class="w"> </span>a<span class="w"> </span>grid<span class="w"> </span>size<span class="w">    </span><span class="o">(</span>x,y,z<span class="o">)</span>:<span class="w"> </span><span class="o">(</span><span class="m">2147483647</span>,<span class="w"> </span><span class="m">65535</span>,<span class="w"> </span><span class="m">65535</span><span class="o">)</span>
+Maximum<span class="w"> </span>memory<span class="w"> </span>pitch:<span class="w">                          </span><span class="m">2147483647</span><span class="w"> </span>bytes
+Texture<span class="w"> </span>alignment:<span class="w">                             </span><span class="m">512</span><span class="w"> </span>bytes
+Concurrent<span class="w"> </span>copy<span class="w"> </span>and<span class="w"> </span>kernel<span class="w"> </span>execution:<span class="w">          </span>Yes<span class="w"> </span>with<span class="w"> </span><span class="m">1</span><span class="w"> </span>copy<span class="w"> </span>engine<span class="o">(</span>s<span class="o">)</span>
+Run<span class="w"> </span><span class="nb">time</span><span class="w"> </span>limit<span class="w"> </span>on<span class="w"> </span>kernels:<span class="w">                     </span>No
+Integrated<span class="w"> </span>GPU<span class="w"> </span>sharing<span class="w"> </span>Host<span class="w"> </span>Memory:<span class="w">            </span>No
+Support<span class="w"> </span>host<span class="w"> </span>page-locked<span class="w"> </span>memory<span class="w"> </span>mapping:<span class="w">       </span>Yes
+Alignment<span class="w"> </span>requirement<span class="w"> </span><span class="k">for</span><span class="w"> </span>Surfaces:<span class="w">            </span>Yes
+Device<span class="w"> </span>has<span class="w"> </span>ECC<span class="w"> </span>support:<span class="w">                        </span>Enabled
+Device<span class="w"> </span>supports<span class="w"> </span>Unified<span class="w"> </span>Addressing<span class="w"> </span><span class="o">(</span>UVA<span class="o">)</span>:<span class="w">      </span>Yes
+Device<span class="w"> </span>supports<span class="w"> </span>Compute<span class="w"> </span>Preemption:<span class="w">            </span>Yes
+Supports<span class="w"> </span>Cooperative<span class="w"> </span>Kernel<span class="w"> </span>Launch:<span class="w">            </span>Yes
+Supports<span class="w"> </span>MultiDevice<span class="w"> </span>Co-op<span class="w"> </span>Kernel<span class="w"> </span>Launch:<span class="w">      </span>Yes
+Device<span class="w"> </span>PCI<span class="w"> </span>Domain<span class="w"> </span>ID<span class="w"> </span>/<span class="w"> </span>Bus<span class="w"> </span>ID<span class="w"> </span>/<span class="w"> </span>location<span class="w"> </span>ID:<span class="w">   </span><span class="m">0</span><span class="w"> </span>/<span class="w"> </span><span class="m">1</span><span class="w"> </span>/<span class="w"> </span><span class="m">0</span>
+Compute<span class="w"> </span>Mode:
+<span class="w">   </span>&lt;<span class="w"> </span>Default<span class="w"> </span><span class="o">(</span>multiple<span class="w"> </span>host<span class="w"> </span>threads<span class="w"> </span>can<span class="w"> </span>use<span class="w"> </span>::cudaSetDevice<span class="o">()</span><span class="w"> </span>with<span class="w"> </span>device<span class="w"> </span>simultaneously<span class="o">)</span><span class="w"> </span>&gt;
+
+deviceQuery,<span class="w"> </span>CUDA<span class="w"> </span><span class="nv">Driver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>CUDART,<span class="w"> </span>CUDA<span class="w"> </span>Driver<span class="w"> </span><span class="nv">Version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span>.3,<span class="w"> </span>CUDA<span class="w"> </span>Runtime<span class="w"> </span><span class="nv">Version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span>.1,<span class="w"> </span><span class="nv">NumDevs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<span class="nv">Result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>PASS
+</pre></div>
+</div>
+<p>While the CPU properties on these nodes is as follows,</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Architecture:<span class="w">        </span>x86_64
+CPU<span class="w"> </span>op-mode<span class="o">(</span>s<span class="o">)</span>:<span class="w">      </span><span class="m">32</span>-bit,<span class="w"> </span><span class="m">64</span>-bit
+Byte<span class="w"> </span>Order:<span class="w">          </span>Little<span class="w"> </span>Endian
+CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">              </span><span class="m">96</span>
+On-line<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>list:<span class="w"> </span><span class="m">0</span>-95
+Thread<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>per<span class="w"> </span>core:<span class="w">  </span><span class="m">1</span>
+Core<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>per<span class="w"> </span>socket:<span class="w">  </span><span class="m">48</span>
+Socket<span class="o">(</span>s<span class="o">)</span>:<span class="w">           </span><span class="m">2</span>
+NUMA<span class="w"> </span>node<span class="o">(</span>s<span class="o">)</span>:<span class="w">        </span><span class="m">16</span>
+Vendor<span class="w"> </span>ID:<span class="w">           </span>AuthenticAMD
+CPU<span class="w"> </span>family:<span class="w">          </span><span class="m">25</span>
+Model:<span class="w">               </span><span class="m">17</span>
+Model<span class="w"> </span>name:<span class="w">          </span>AMD<span class="w"> </span>EPYC<span class="w"> </span><span class="m">9454</span><span class="w"> </span><span class="m">48</span>-Core<span class="w"> </span>Processor
+Stepping:<span class="w">            </span><span class="m">1</span>
+CPU<span class="w"> </span>MHz:<span class="w">             </span><span class="m">2750</span>.000
+CPU<span class="w"> </span>max<span class="w"> </span>MHz:<span class="w">         </span><span class="m">3810</span>.7910
+CPU<span class="w"> </span>min<span class="w"> </span>MHz:<span class="w">         </span><span class="m">1500</span>.0000
+BogoMIPS:<span class="w">            </span><span class="m">5492</span>.04
+Virtualization:<span class="w">      </span>AMD-V
+L1d<span class="w"> </span>cache:<span class="w">           </span>32K
+L1i<span class="w"> </span>cache:<span class="w">           </span>32K
+L2<span class="w"> </span>cache:<span class="w">            </span>1024K
+L3<span class="w"> </span>cache:<span class="w">            </span>32768K
+NUMA<span class="w"> </span>node0<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">   </span><span class="m">0</span>-5
+NUMA<span class="w"> </span>node1<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">   </span><span class="m">6</span>-11
+NUMA<span class="w"> </span>node2<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">   </span><span class="m">12</span>-17
+NUMA<span class="w"> </span>node3<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">   </span><span class="m">18</span>-23
+NUMA<span class="w"> </span>node4<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">   </span><span class="m">24</span>-29
+NUMA<span class="w"> </span>node5<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">   </span><span class="m">30</span>-35
+NUMA<span class="w"> </span>node6<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">   </span><span class="m">36</span>-41
+NUMA<span class="w"> </span>node7<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">   </span><span class="m">42</span>-47
+NUMA<span class="w"> </span>node8<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">   </span><span class="m">48</span>-53
+NUMA<span class="w"> </span>node9<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">   </span><span class="m">54</span>-59
+NUMA<span class="w"> </span>node10<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">  </span><span class="m">60</span>-65
+NUMA<span class="w"> </span>node11<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">  </span><span class="m">66</span>-71
+NUMA<span class="w"> </span>node12<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">  </span><span class="m">72</span>-77
+NUMA<span class="w"> </span>node13<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">  </span><span class="m">78</span>-83
+NUMA<span class="w"> </span>node14<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">  </span><span class="m">84</span>-89
+NUMA<span class="w"> </span>node15<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">  </span><span class="m">90</span>-95
+</pre></div>
+</div>
+<p>Feel free to inquire about other GPU related properties through the command,</p>
+<p><code class="docutils literal notranslate"><span class="pre">nvidia-smi</span> <span class="pre">-q</span> <span class="pre">|</span> <span class="pre">less</span></code></p>
+<p>Finally, a streaming multiprocessor or SM’s configuration for the A100 card is shown below.</p>
+<figure class="align-center" id="id1">
+<img alt="Your image alt text" src="_images/A100arch.png" />
+<figcaption>
+<p><span class="caption-text">Diagram of streaming multiprocessor for <a class="reference external" href="https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/">NVIDIA A100 GPU</a> card.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Another important feature that is useful while writing/compiling CUDA programs is the compute_capability of the hardware, which in case of A100s, is 8.0. This can be obtained from the <code class="docutils literal notranslate"><span class="pre">nvcc</span> <span class="pre">--help</span></code> command after loading the cuda module with <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">cuda/12.2.2</span></code>. This will also become more clear with examples.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="01Helloworld.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Getting started</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Atul Singh
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

@@ -1,0 +1,11 @@
+Getting started
+===============
+
+This section will discuss about loading specific modules to run CUDA jobs. 
+The first one you need is 
+
+``module load CUDA/12.2.2``
+
+One would also need GCC flags, this can be done with 
+
+`` module load gcc/

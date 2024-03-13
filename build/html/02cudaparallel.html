@@ -1,0 +1,474 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Memory Management" href="03mem_mgmt.html" /><link rel="prev" title="Getting started" href="01Helloworld.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>CUDA’s parallel model: Threads,Blocks and Grids. - CUDA on ADA 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=058af07a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">CUDA on ADA 1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">CUDA on ADA 1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01Helloworld.html">Getting started</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CUDA’s parallel model: Threads,Blocks and Grids.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03mem_mgmt.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04errorhandling.html">Error handling in CUDA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usinglibs.html">Using CUDA libraries</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="cuda-s-parallel-model-threads-blocks-and-grids">
+<h1>CUDA’s parallel model: Threads,Blocks and Grids.<a class="headerlink" href="#cuda-s-parallel-model-threads-blocks-and-grids" title="Link to this heading">#</a></h1>
+<section id="device-code-definition">
+<h2>Device Code definition<a class="headerlink" href="#device-code-definition" title="Link to this heading">#</a></h2>
+<div class="highlight-cuda notranslate"><div class="highlight"><pre><span></span><span class="kr">__global__</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">kernel_function</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="cp">## A function that can be run on each of the threads.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>CUDA C++ keyword <code class="docutils literal notranslate"><span class="pre">__global__</span></code> indicates that a function will be run on the device (GPU).</p></li>
+<li><p>This is also called from the host (CPU).</p></li>
+<li><p>nvcc (the CUDA compiler), can differntiate between which code will be executed on GPU and whill will be on CPU due to this nomenclature.</p></li>
+</ul>
+</section>
+<section id="launching-a-cuda-kernel">
+<h2>Launching a CUDA Kernel<a class="headerlink" href="#launching-a-cuda-kernel" title="Link to this heading">#</a></h2>
+<p>The next thing to know is how can we define that the above <code class="docutils literal notranslate"><span class="pre">__global__</span></code> function can be run in parallel. This is done with the kernel definition within the <code class="docutils literal notranslate"><span class="pre">&lt;&lt;&lt;</span> <span class="pre">&gt;&gt;&gt;</span></code> blocks as shown in the example. When launching a CUDA kernel, you define threads, blocks, and grids using the following syntax:</p>
+<div class="highlight-cuda notranslate"><div class="highlight"><pre><span></span><span class="n">kernel_function</span><span class="o">&lt;&lt;&lt;</span><span class="n">num_blocks</span><span class="p">,</span><span class="w"> </span><span class="n">threads_per_block</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">arguments</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_function</span></code>: This is the name of the CUDA kernel function you want to execute.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_blocks</span></code>: This is the number of blocks in the grid. It can be a one-dimensional, two-dimensional, or three-dimensional grid, specified as <code class="docutils literal notranslate"><span class="pre">dim3</span></code> type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">threads_per_block</span></code>: This is the number of threads in each block. Similar to <code class="docutils literal notranslate"><span class="pre">num_blocks</span></code>, it can be specified as <code class="docutils literal notranslate"><span class="pre">dim3</span></code> type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arguments</span></code>: These are the arguments passed to the CUDA kernel function.</p></li>
+</ul>
+<p>For example:</p>
+<div class="highlight-cuda notranslate"><div class="highlight"><pre><span></span><span class="kt">dim3</span><span class="w"> </span><span class="nf">num_blocks</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="kt">dim3</span><span class="w"> </span><span class="nf">threads_per_block</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="n">kernel_function</span><span class="o">&lt;&lt;&lt;</span><span class="n">num_blocks</span><span class="p">,</span><span class="w"> </span><span class="n">threads_per_block</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">arguments</span><span class="p">);</span><span class="w"> </span><span class="c1">// kernel function will be executed 64 * 256 = 16384, times.</span>
+</pre></div>
+</div>
+<p>In this example, the kernel function will be executed with a grid of 64 blocks, each containing 256 threads. The total number of threads executing the kernel function will be <code class="docutils literal notranslate"><span class="pre">64</span> <span class="pre">*</span> <span class="pre">256</span> <span class="pre">=</span> <span class="pre">16384</span></code> threads.</p>
+<p>In CUDA programming, understanding threads, blocks, and grids is fundamental as they are key concepts for parallel execution on the GPU. Let’s break down each of them:</p>
+</section>
+<section id="thread">
+<h2>Thread<a class="headerlink" href="#thread" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A thread is the smallest unit of execution in a CUDA program.</p></li>
+<li><p>Threads execute a specific portion of code, typically referred to as a kernel function.</p></li>
+<li><p>Each thread has its unique identifier called a thread index.</p></li>
+</ul>
+<figure class="align-default">
+<img alt="_images/thread-threads.png" src="_images/thread-threads.png" />
+</figure>
+</section>
+<section id="block">
+<h2>Block<a class="headerlink" href="#block" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A block is a group of threads that execute the same code in parallel.</p></li>
+<li><p>Threads within a block can communicate and synchronize with each other using shared memory.</p></li>
+<li><p>Each block has its unique identifier called a block index.</p></li>
+</ul>
+<figure class="align-default">
+<img alt="_images/block-blocks.png" src="_images/block-blocks.png" />
+</figure>
+</section>
+<section id="grid">
+<h2>Grid<a class="headerlink" href="#grid" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A grid is a collection of blocks that execute the same kernel function.</p></li>
+<li><p>Blocks within a grid can execute independently and concurrently.</p></li>
+<li><p>Each block within a grid can have its unique thread configuration.</p></li>
+</ul>
+<figure class="align-default">
+<img alt="_images/grid-grids.png" src="_images/grid-grids.png" />
+</figure>
+<p>Corresponding to a hardware, one can see from the following figure, that these are mapped respectively to a CUDA core, a streaming multiprocessor (SMs) and a GPU device respectively,</p>
+<figure class="align-default">
+<img alt="_images/mapping.png" src="_images/mapping.png" />
+</figure>
+<p>To understand thread and block indexing better, look at the following image,</p>
+<figure class="align-default">
+<img alt="_images/threadID.png" src="_images/threadID.png" />
+</figure>
+<p>Here, three blocks have been shown, each with 7 threads.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>int<span class="w"> </span><span class="nv">thread_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>threadIdx.x<span class="w">  </span>+<span class="w"> </span>blockIdx.x<span class="w"> </span>*<span class="w"> </span>blockDim.x
+</pre></div>
+</div>
+<p>With this formula, any thread in any number of grids can be easily identified. Now lets try an example, with this forumla.</p>
+<p>Which thread will operate on the 16th and 22nd element?</p>
+<figure class="align-default">
+<img alt="_images/16-22element.png" src="_images/16-22element.png" />
+</figure>
+<p>Take your time before you scroll. The answer can be adjudged from below.</p>
+<figure class="align-default">
+<img alt="_images/16-22answer.png" src="_images/16-22answer.png" />
+</figure>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//obtained from threadIdx.x + blockIdx.x * blockDim.x</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">answer_index_16</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="o">*</span><span class="mi">10</span><span class="w">  </span><span class="c1">// = 16</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">answer_index_22</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="mi">10</span><span class="w">  </span><span class="c1">// = 22</span>
+</pre></div>
+</div>
+<p>It is important to note the threads being a multiple of 32 (Warp size). This is mostly intended for performance benefits.  i.e. the <code class="docutils literal notranslate"><span class="pre">threads_per_block</span></code> needs to be a multiple of 32 (but not greater than 1024) , while the number of blocks can be a big number, See Maximum number of threads per block and Maximum dimension size of grid size (x) from device querry <a class="reference internal" href="index.html#nvidia-a100-card-properties"><span class="std std-ref">NVIDIA A100 card properties</span></a>.
+Now of course, it is not always possible to run the exact number of grids that are multiple of 32, say like 1000 parallel tasks. This can be achieved with the following forumula.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100000</span><span class="p">;</span>
+
+<span class="c1">// Assume we have a desire to set &#39;threads_per_block&#39; exactly to &#39;1024&#39;, the largest possible threads_per_block for A100 cards.</span>
+<span class="kt">size_t</span><span class="w"> </span><span class="n">threads_per_block</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span>
+
+<span class="c1">// Ensure there are at least &#39;N&#39; threads in the grid, but only 1 block&#39;s worth extra</span>
+<span class="kt">size_t</span><span class="w"> </span><span class="n">number_of_blocks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">N</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">threads_per_block</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">threads_per_block</span><span class="p">;</span>
+
+<span class="n">my_awesome_kernel_function</span><span class="o">&lt;&lt;&lt;</span><span class="n">number_of_blocks</span><span class="p">,</span><span class="w"> </span><span class="n">threads_per_block</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">N</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="obtaining-threads-and-blocks-in-cuda">
+<h2>Obtaining threads and blocks in CUDA<a class="headerlink" href="#obtaining-threads-and-blocks-in-cuda" title="Link to this heading">#</a></h2>
+<p>See the following example that writes a simple print statement to identify the blocks, and threads of the kernels.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span>
+<span class="cm">/**</span>
+<span class="cm">* This function prints the blockdim, blockId and thread ID of the kernel.</span>
+<span class="cm">*/</span>
+
+
+<span class="n">__global__</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">print_id</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="o">*</span><span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+
+<span class="w">      </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;blockDim.x = %d, blockIdx.x = %d, threadIdx.x = %d, of threadID i = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">      </span><span class="n">print_id</span><span class="o">&lt;&lt;&lt;</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="o">&gt;&gt;&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// try changing the numbers, to understand the indexing better.</span>
+<span class="w">      </span><span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The result for <code class="docutils literal notranslate"><span class="pre">&lt;&lt;&lt;2,8&gt;&gt;&gt;</span></code> is as follows,</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">9</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">11</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">13</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">14</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span>
+<span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">threadID</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span>
+</pre></div>
+</div>
+</section>
+<section id="d-grids-and-blocks">
+<h2>3D grids and blocks<a class="headerlink" href="#d-grids-and-blocks" title="Link to this heading">#</a></h2>
+<p>One can also potentially define a 3D grids as shown in above figures, with the help of a built-in <code class="docutils literal notranslate"><span class="pre">struct</span></code> by the name of <code class="docutils literal notranslate"><span class="pre">dim3</span> <span class="pre">(x,y,z)</span></code>. See the example below.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda_runtime_api.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="n">__global__</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">PrintIDs</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="c1">// Use built-in variables blockIdx and threadIdx</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">tID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">;</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">bID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">;</span>
+<span class="w">   </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Block Id: %d,%d - Thread Id: %d,%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bID</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">bID</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">tID</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">tID</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;==== 3D Grid Configurations ====</span><span class="se">\n</span><span class="s">&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Small grid: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">   </span><span class="c1">// Configure the grid and block dimensions via built-in struct dim3 (X,Y,Z)</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="n">dim3</span><span class="w"> </span><span class="n">gridSize_small</span><span class="p">{</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">//try and cahnge these numbers</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="n">dim3</span><span class="w"> </span><span class="n">blockSize_small</span><span class="p">{</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">//try and cahnge these numbers</span>
+
+<span class="w">   </span><span class="c1">// Launch kernel with custom grid</span>
+<span class="w">   </span><span class="n">PrintIDs</span><span class="o">&lt;&lt;&lt;</span><span class="n">gridSize_small</span><span class="p">,</span><span class="w"> </span><span class="n">blockSize_small</span><span class="o">&gt;&gt;&gt;</span><span class="p">();</span>
+
+<span class="w">   </span><span class="c1">// Need to synchronize here to have the GPU and CPU printouts in the correct order</span>
+<span class="w">   </span><span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Larger grid: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="n">dim3</span><span class="w"> </span><span class="n">gridSize_large</span><span class="p">{</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">//try and cahnge these numbers</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="n">dim3</span><span class="w"> </span><span class="n">blockSize_large</span><span class="p">{</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">//try and cahnge these numbers</span>
+
+<span class="w">   </span><span class="n">PrintIDs</span><span class="o">&lt;&lt;&lt;</span><span class="n">gridSize_large</span><span class="p">,</span><span class="w"> </span><span class="n">blockSize_large</span><span class="w"> </span><span class="o">&gt;&gt;&gt;</span><span class="p">();</span>
+<span class="w">   </span><span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As to answer the question of how much is the maximum number of threads and grids can be chosen for the size, the following sciprt of deviceQuery from NVIDIA’s cuda samples, gives a brief about the A100 card, from <a class="reference internal" href="index.html#nvidia-a100-card-properties"><span class="std std-ref">NVIDIA A100 card properties</span></a>.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="03mem_mgmt.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Memory Management</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="01Helloworld.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Getting started</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Atul Singh
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">CUDA’s parallel model: Threads,Blocks and Grids.</a><ul>
+<li><a class="reference internal" href="#device-code-definition">Device Code definition</a></li>
+<li><a class="reference internal" href="#launching-a-cuda-kernel">Launching a CUDA Kernel</a></li>
+<li><a class="reference internal" href="#thread">Thread</a></li>
+<li><a class="reference internal" href="#block">Block</a></li>
+<li><a class="reference internal" href="#grid">Grid</a></li>
+<li><a class="reference internal" href="#obtaining-threads-and-blocks-in-cuda">Obtaining threads and blocks in CUDA</a></li>
+<li><a class="reference internal" href="#d-grids-and-blocks">3D grids and blocks</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

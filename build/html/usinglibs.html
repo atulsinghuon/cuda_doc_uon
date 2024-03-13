@@ -1,0 +1,562 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Error handling in CUDA" href="04errorhandling.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>Using CUDA libraries - CUDA on ADA 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=058af07a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">CUDA on ADA 1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">CUDA on ADA 1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01Helloworld.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02cudaparallel.html">CUDA’s parallel model: Threads,Blocks and Grids.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03mem_mgmt.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04errorhandling.html">Error handling in CUDA</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Using CUDA libraries</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="using-cuda-libraries">
+<h1>Using CUDA libraries<a class="headerlink" href="#using-cuda-libraries" title="Link to this heading">#</a></h1>
+<p>There exists several amazing libraries that can help a user accelerate its common functions. These libraries not only make using GPUs easier, they aslo provide a good starting point for complex tasks.</p>
+<figure class="align-default">
+<img alt="_images/libraries.png" src="_images/libraries.png" />
+</figure>
+<p>These libraries, namely cuDNN, cuSparse, cuBlas, cuRand etc, are few of the <a class="reference external" href="https://developer.nvidia.com/gpu-accelerated-libraries">many libraries by NVIDIA</a> that are available. The module for loading the CUDA toolkit is</p>
+<p><code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">cuda-uoneasy/12.1.1.</span></code></p>
+<p>Some of the major ones are listed below,</p>
+<ul class="simple">
+<li><p>cuDNN - GPU-accelerated library of primitives for deep neural networks</p></li>
+<li><p>cuBLAS - GPU-accelerated standard BLAS library</p></li>
+<li><p>cuSPARSE - GPU-accelerated BLAS for sparse matrices</p></li>
+<li><p>cuRAND - GPU-accelerated random number generation (RNG)</p></li>
+<li><p>cuSOLVER - Dense and sparse direct solvers for computer vision, CFD and other applications</p></li>
+<li><p>cuTENSOR - GPU-accelerated tensor linear algebra library</p></li>
+<li><p>cuFFT - GPU-accelerated library for Fast Fourier Transforms</p></li>
+<li><p>NPP - GPU-accelerated image, video, and signal processing functions</p></li>
+<li><p>NCCL - Collective Communications Library for scaling apps across multiple GPUs and nodes</p></li>
+<li><p>nvGRAPH - GPU-accelerated library for graph analytics</p></li>
+</ul>
+<section id="external-libraries-compiled-using-makefiles">
+<h2>External libraries compiled using Makefiles<a class="headerlink" href="#external-libraries-compiled-using-makefiles" title="Link to this heading">#</a></h2>
+<p>We now take an example that calculates the Singular value decomposition using the pre-existing <code class="docutils literal notranslate"><span class="pre">cuSolverDN</span> <span class="pre">:</span> <span class="pre">Dense</span> <span class="pre">linear</span> <span class="pre">algebra</span> <span class="pre">library</span></code>.</p>
+<p>The libraries that this program needs is the <code class="docutils literal notranslate"><span class="pre">libcusolver</span></code> present in the <code class="docutils literal notranslate"><span class="pre">/gpfs01/software/easybuild-ada-uon/software/CUDA/12.1.1/targets/x86_64-linux/lib/</span></code>. This is passed to the code as a <code class="docutils literal notranslate"><span class="pre">-I</span></code> flag in the Makefile.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="cm">/*</span>
+<span class="cm">*  * How to compile</span>
+<span class="cm">*   *   nvcc -c -I/usr/local/cuda-10.1/include gesvdj_example.cpp</span>
+<span class="cm">*    *   g++ -o gesvdj_example gesvdj_example.o -L/usr/local/cuda-10.1/lib64 -lcudart -lcusolver</span>
+<span class="cm">*     */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda_runtime.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cusolverDn.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">printMatrix</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lda</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">row</span><span class="o">++</span><span class="p">){</span>
+<span class="w">        </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">col</span><span class="o">++</span><span class="p">){</span>
+<span class="w">            </span><span class="kt">double</span><span class="w"> </span><span class="n">Areg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">row</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">col</span><span class="o">*</span><span class="n">lda</span><span class="p">];</span>
+<span class="w">            </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s(%d,%d) = %20.16E</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">Areg</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">cusolverDnHandle_t</span><span class="w"> </span><span class="n">cusolverH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaStream_t</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="n">gesvdjInfo_t</span><span class="w"> </span><span class="n">gesvdj_params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">cusolverStatus_t</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CUSOLVER_STATUS_SUCCESS</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaError_t</span><span class="w"> </span><span class="n">cudaStat1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaSuccess</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaError_t</span><span class="w"> </span><span class="n">cudaStat2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaSuccess</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaError_t</span><span class="w"> </span><span class="n">cudaStat3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaSuccess</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaError_t</span><span class="w"> </span><span class="n">cudaStat4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaSuccess</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaError_t</span><span class="w"> </span><span class="n">cudaStat5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaSuccess</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lda</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
+<span class="cm">/*       | 1 2  |</span>
+<span class="cm">*        *   A = | 4 5  |</span>
+<span class="cm">*         *       | 2 1  |</span>
+<span class="cm">*          */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">lda</span><span class="o">*</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">U</span><span class="p">[</span><span class="n">lda</span><span class="o">*</span><span class="n">m</span><span class="p">];</span><span class="w"> </span><span class="cm">/* m-by-m unitary matrix, left singular vectors  */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">V</span><span class="p">[</span><span class="n">lda</span><span class="o">*</span><span class="n">n</span><span class="p">];</span><span class="w"> </span><span class="cm">/* n-by-n unitary matrix, right singular vectors */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">S</span><span class="p">[</span><span class="n">n</span><span class="p">];</span><span class="w">     </span><span class="cm">/* numerical singular value */</span>
+
+
+<span class="cm">/* exact singular values */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">S_exact</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">7.065283497082729</span><span class="p">,</span><span class="w"> </span><span class="mf">1.040081297712078</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">d_A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">  </span><span class="cm">/* device copy of A */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">d_S</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">  </span><span class="cm">/* singular values */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">d_U</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">  </span><span class="cm">/* left singular vectors */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">d_V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">  </span><span class="cm">/* right singular vectors */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">d_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">  </span><span class="cm">/* error info */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">lwork</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">       </span><span class="cm">/* size of workspace */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">d_work</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w"> </span><span class="cm">/* devie workspace for gesvdj */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">        </span><span class="cm">/* host copy of error info */</span>
+
+
+<span class="cm">/* configuration of gesvdj  */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">tol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.</span><span class="n">e</span><span class="mi">-7</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_sweeps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">cusolverEigMode_t</span><span class="w"> </span><span class="n">jobz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CUSOLVER_EIG_MODE_VECTOR</span><span class="p">;</span><span class="w"> </span><span class="c1">// compute eigenvectors.</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">econ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="cm">/* econ = 1 for economy size */</span>
+
+<span class="cm">/* numerical results of gesvdj  */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">residual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">executed_sweeps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;example of gesvdj </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;tol = %E, default value is machine zero </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">tol</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;max. sweeps = %d, default value is 100</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">max_sweeps</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;econ = %d </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">econ</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;A = (matlab base-1)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printMatrix</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">lda</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;A&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;=====</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="cm">/* step 1: create cusolver handle, bind a stream */</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cusolverDnCreate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cusolverH</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">CUSOLVER_STATUS_SUCCESS</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">cudaStat1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaStreamCreateWithFlags</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="n">cudaStreamNonBlocking</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cusolverDnSetStream</span><span class="p">(</span><span class="n">cusolverH</span><span class="p">,</span><span class="w"> </span><span class="n">stream</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">CUSOLVER_STATUS_SUCCESS</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+
+<span class="cm">/* step 2: configuration of gesvdj */</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cusolverDnCreateGesvdjInfo</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gesvdj_params</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">CUSOLVER_STATUS_SUCCESS</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+
+<span class="cm">/* default value of tolerance is machine zero */</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cusolverDnXgesvdjSetTolerance</span><span class="p">(</span>
+<span class="w">        </span><span class="n">gesvdj_params</span><span class="p">,</span>
+<span class="w">        </span><span class="n">tol</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">CUSOLVER_STATUS_SUCCESS</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+
+<span class="cm">/* default value of max. sweeps is 100 */</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cusolverDnXgesvdjSetMaxSweeps</span><span class="p">(</span>
+<span class="w">        </span><span class="n">gesvdj_params</span><span class="p">,</span>
+<span class="w">        </span><span class="n">max_sweeps</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">CUSOLVER_STATUS_SUCCESS</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+
+<span class="cm">/* step 3: copy A and B to device */</span>
+<span class="w">    </span><span class="n">cudaStat1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMalloc</span><span class="w"> </span><span class="p">((</span><span class="kt">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">d_A</span><span class="w">   </span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">*</span><span class="n">lda</span><span class="o">*</span><span class="n">n</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cudaStat2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMalloc</span><span class="w"> </span><span class="p">((</span><span class="kt">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">d_S</span><span class="w">   </span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">*</span><span class="n">n</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cudaStat3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMalloc</span><span class="w"> </span><span class="p">((</span><span class="kt">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">d_U</span><span class="w">   </span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">*</span><span class="n">lda</span><span class="o">*</span><span class="n">m</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cudaStat4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMalloc</span><span class="w"> </span><span class="p">((</span><span class="kt">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">d_V</span><span class="w">   </span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">*</span><span class="n">lda</span><span class="o">*</span><span class="n">n</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cudaStat5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMalloc</span><span class="w"> </span><span class="p">((</span><span class="kt">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">d_info</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat1</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat2</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat3</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat4</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat5</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">cudaStat1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">d_A</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">*</span><span class="n">lda</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">cudaMemcpyHostToDevice</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat1</span><span class="p">);</span>
+
+<span class="cm">/* step 4: query workspace of SVD */</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cusolverDnDgesvdj_bufferSize</span><span class="p">(</span>
+<span class="w">        </span><span class="n">cusolverH</span><span class="p">,</span>
+<span class="w">        </span><span class="n">jobz</span><span class="p">,</span><span class="w"> </span><span class="cm">/* CUSOLVER_EIG_MODE_NOVECTOR: compute singular values only */</span>
+<span class="w">            </span><span class="cm">/* CUSOLVER_EIG_MODE_VECTOR: compute singular value and singular vectors */</span>
+<span class="w">        </span><span class="n">econ</span><span class="p">,</span><span class="w"> </span><span class="cm">/* econ = 1 for economy size */</span>
+<span class="w">        </span><span class="n">m</span><span class="p">,</span><span class="w">    </span><span class="cm">/* nubmer of rows of A, 0 &lt;= m */</span>
+<span class="w">        </span><span class="n">n</span><span class="p">,</span><span class="w">    </span><span class="cm">/* number of columns of A, 0 &lt;= n  */</span>
+<span class="w">        </span><span class="n">d_A</span><span class="p">,</span><span class="w">  </span><span class="cm">/* m-by-n */</span>
+<span class="w">        </span><span class="n">lda</span><span class="p">,</span><span class="w">  </span><span class="cm">/* leading dimension of A */</span>
+<span class="w">        </span><span class="n">d_S</span><span class="p">,</span><span class="w">  </span><span class="cm">/* min(m,n) */</span>
+<span class="w">            </span><span class="cm">/* the singular values in descending order */</span>
+<span class="w">        </span><span class="n">d_U</span><span class="p">,</span><span class="w">  </span><span class="cm">/* m-by-m if econ = 0 */</span>
+<span class="w">            </span><span class="cm">/* m-by-min(m,n) if econ = 1 */</span>
+<span class="w">        </span><span class="n">lda</span><span class="p">,</span><span class="w">  </span><span class="cm">/* leading dimension of U, ldu &gt;= max(1,m) */</span>
+<span class="w">        </span><span class="n">d_V</span><span class="p">,</span><span class="w">  </span><span class="cm">/* n-by-n if econ = 0  */</span>
+<span class="w">            </span><span class="cm">/* n-by-min(m,n) if econ = 1  */</span>
+<span class="w">        </span><span class="n">lda</span><span class="p">,</span><span class="w">  </span><span class="cm">/* leading dimension of V, ldv &gt;= max(1,n) */</span>
+<span class="w">        </span><span class="o">&amp;</span><span class="n">lwork</span><span class="p">,</span>
+<span class="w">        </span><span class="n">gesvdj_params</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">CUSOLVER_STATUS_SUCCESS</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">cudaStat1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMalloc</span><span class="p">((</span><span class="kt">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">d_work</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">*</span><span class="n">lwork</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat1</span><span class="p">);</span>
+
+<span class="cm">/* step 5: compute SVD */</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cusolverDnDgesvdj</span><span class="p">(</span>
+<span class="w">        </span><span class="n">cusolverH</span><span class="p">,</span>
+<span class="w">        </span><span class="n">jobz</span><span class="p">,</span><span class="w">  </span><span class="cm">/* CUSOLVER_EIG_MODE_NOVECTOR: compute singular values only */</span>
+<span class="w">            </span><span class="cm">/* CUSOLVER_EIG_MODE_VECTOR: compute singular value and singular vectors */</span>
+<span class="w">        </span><span class="n">econ</span><span class="p">,</span><span class="w">  </span><span class="cm">/* econ = 1 for economy size */</span>
+<span class="w">        </span><span class="n">m</span><span class="p">,</span><span class="w">     </span><span class="cm">/* nubmer of rows of A, 0 &lt;= m */</span>
+<span class="w">        </span><span class="n">n</span><span class="p">,</span><span class="w">     </span><span class="cm">/* number of columns of A, 0 &lt;= n  */</span>
+<span class="w">        </span><span class="n">d_A</span><span class="p">,</span><span class="w">   </span><span class="cm">/* m-by-n */</span>
+<span class="w">        </span><span class="n">lda</span><span class="p">,</span><span class="w">   </span><span class="cm">/* leading dimension of A */</span>
+<span class="w">        </span><span class="n">d_S</span><span class="p">,</span><span class="w">   </span><span class="cm">/* min(m,n)  */</span>
+<span class="w">            </span><span class="cm">/* the singular values in descending order */</span>
+<span class="w">        </span><span class="n">d_U</span><span class="p">,</span><span class="w">   </span><span class="cm">/* m-by-m if econ = 0 */</span>
+<span class="w">            </span><span class="cm">/* m-by-min(m,n) if econ = 1 */</span>
+<span class="w">        </span><span class="n">lda</span><span class="p">,</span><span class="w">   </span><span class="cm">/* leading dimension of U, ldu &gt;= max(1,m) */</span>
+<span class="w">        </span><span class="n">d_V</span><span class="p">,</span><span class="w">   </span><span class="cm">/* n-by-n if econ = 0  */</span>
+<span class="w">            </span><span class="cm">/* n-by-min(m,n) if econ = 1  */</span>
+<span class="w">        </span><span class="n">lda</span><span class="p">,</span><span class="w">   </span><span class="cm">/* leading dimension of V, ldv &gt;= max(1,n) */</span>
+<span class="w">        </span><span class="n">d_work</span><span class="p">,</span>
+<span class="w">        </span><span class="n">lwork</span><span class="p">,</span>
+<span class="w">        </span><span class="n">d_info</span><span class="p">,</span>
+<span class="w">        </span><span class="n">gesvdj_params</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cudaStat1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">CUSOLVER_STATUS_SUCCESS</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">cudaStat1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">d_U</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">*</span><span class="n">lda</span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cudaStat2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">d_V</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">*</span><span class="n">lda</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cudaStat3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">d_S</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">*</span><span class="n">n</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cudaStat4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaMemcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">info</span><span class="p">,</span><span class="w"> </span><span class="n">d_info</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span><span class="w"> </span><span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cudaStat5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat1</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat2</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat3</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat4</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cudaSuccess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaStat5</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="p">){</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;gesvdj converges </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="p">){</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d-th parameter is wrong </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">info</span><span class="p">);</span>
+<span class="w">        </span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;WARNING: info = %d : gesvdj does not converge </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;S = singular values (matlab base-1)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printMatrix</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">lda</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;S&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;=====</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;U = left singular vectors (matlab base-1)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printMatrix</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">lda</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;U&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;=====</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;V = right singular vectors (matlab base-1)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printMatrix</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">lda</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;V&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;=====</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="cm">/* step 6: measure error of singular value */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">ds_sup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">){</span>
+<span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fabs</span><span class="p">(</span><span class="w"> </span><span class="n">S</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">S_exact</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="p">);</span>
+<span class="w">        </span><span class="n">ds_sup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ds_sup</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">err</span><span class="p">)</span><span class="o">?</span><span class="w"> </span><span class="n">ds_sup</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;|S - S_exact|_sup = %E </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ds_sup</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cusolverDnXgesvdjGetSweeps</span><span class="p">(</span>
+<span class="w">        </span><span class="n">cusolverH</span><span class="p">,</span>
+<span class="w">        </span><span class="n">gesvdj_params</span><span class="p">,</span>
+<span class="w">        </span><span class="o">&amp;</span><span class="n">executed_sweeps</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">CUSOLVER_STATUS_SUCCESS</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cusolverDnXgesvdjGetResidual</span><span class="p">(</span>
+<span class="w">        </span><span class="n">cusolverH</span><span class="p">,</span>
+<span class="w">        </span><span class="n">gesvdj_params</span><span class="p">,</span>
+<span class="w">        </span><span class="o">&amp;</span><span class="n">residual</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">CUSOLVER_STATUS_SUCCESS</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;residual |A - U*S*V**H|_F = %E </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">residual</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;number of executed sweeps = %d </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">executed_sweeps</span><span class="w"> </span><span class="p">);</span>
+
+<span class="cm">/*  free resources  */</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">d_A</span><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="n">cudaFree</span><span class="p">(</span><span class="n">d_A</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">d_S</span><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="n">cudaFree</span><span class="p">(</span><span class="n">d_S</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">d_U</span><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="n">cudaFree</span><span class="p">(</span><span class="n">d_U</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">d_V</span><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="n">cudaFree</span><span class="p">(</span><span class="n">d_V</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">d_info</span><span class="p">)</span><span class="w"> </span><span class="n">cudaFree</span><span class="p">(</span><span class="n">d_info</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">d_work</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">cudaFree</span><span class="p">(</span><span class="n">d_work</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cusolverH</span><span class="p">)</span><span class="w"> </span><span class="n">cusolverDnDestroy</span><span class="p">(</span><span class="n">cusolverH</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">stream</span><span class="w">      </span><span class="p">)</span><span class="w"> </span><span class="n">cudaStreamDestroy</span><span class="p">(</span><span class="n">stream</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">gesvdj_params</span><span class="p">)</span><span class="w"> </span><span class="n">cusolverDnDestroyGesvdjInfo</span><span class="p">(</span><span class="n">gesvdj_params</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">cudaDeviceReset</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The makefile required to compile the above code, would look like as follows, which uses the libraries inside <code class="docutils literal notranslate"><span class="pre">/common/inc/</span></code> and <code class="docutils literal notranslate"><span class="pre">/lib/</span></code> which can be passed as variable in the makefile.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compiler options</span>
+<span class="nv">NVCC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>nvcc
+<span class="nv">CFLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-I<span class="w"> </span>/gpfs01/software/easybuild-ada-uon/software/CUDA/10.1.243-GCC-8.3.0/samples/common/inc/
+<span class="nv">LDFLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-L<span class="w"> </span>/gpfs01/software/easybuild-ada-uon/software/CUDA/12.1.1/targets/x86_64-linux/lib/
+<span class="nv">LIBS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-lcudart<span class="w"> </span>-lcusolver
+<span class="nv">GENCODE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-gencode<span class="w"> </span><span class="nv">arch</span><span class="o">=</span>compute_80,code<span class="o">=</span>sm_80
+
+<span class="c1"># Target executable</span>
+<span class="nv">TARGET</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>svd_example.out
+
+<span class="c1"># Source files</span>
+<span class="nv">SRCS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>svd_example.cpp
+
+<span class="c1"># Rule to build the executable</span>
+<span class="k">$(</span>TARGET<span class="k">)</span>:<span class="w"> </span><span class="k">$(</span>SRCS<span class="k">)</span>
+<span class="w">        </span><span class="k">$(</span>NVCC<span class="k">)</span><span class="w"> </span><span class="k">$(</span>SRCS<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span><span class="k">$(</span>TARGET<span class="k">)</span><span class="w"> </span><span class="k">$(</span>CFLAGS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>LDFLAGS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>LIBS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>GENCODE<span class="k">)</span>
+
+<span class="c1"># Clean rule</span>
+clean:
+<span class="w">        </span>rm<span class="w"> </span>-f<span class="w"> </span><span class="k">$(</span>TARGET<span class="k">)</span>
+</pre></div>
+</div>
+<p>Save the make file above by the name <code class="docutils literal notranslate"><span class="pre">Makefile_svd</span></code> and run the following command either in your SLURM script or inside the directory where the <code class="docutils literal notranslate"><span class="pre">.cpp</span></code> file exists for this code.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-f<span class="w"> </span>Makefile_svd
+
+<span class="c1">#Note that this command is for a customfile name Makefile_svd. By default the filename observed is &quot;Makefile&quot;, in which case just running &quot;make&quot; will build the executable according to the defintitions.</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="04errorhandling.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Error handling in CUDA</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Atul Singh
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Using CUDA libraries</a><ul>
+<li><a class="reference internal" href="#external-libraries-compiled-using-makefiles">External libraries compiled using Makefiles</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>
