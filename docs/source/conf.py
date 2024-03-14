@@ -16,7 +16,9 @@ release = '1.0'
 
 extensions = [
     'sphinx.ext.autosectionlabel',
+    'sphinx_tabs.tabs',
 ]
+
 
 templates_path = ['_templates']
 exclude_patterns = []

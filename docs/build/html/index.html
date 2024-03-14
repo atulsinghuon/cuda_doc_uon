@@ -9,6 +9,7 @@
         <title>CUDA on ADA 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=058af07a" />
     
@@ -160,7 +161,7 @@
 <li class="toctree-l1"><a class="reference internal" href="02cudaparallel.html">CUDA’s parallel model: Threads,Blocks and Grids.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03mem_mgmt.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04errorhandling.html">Error handling in CUDA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usinglibs.html">Using CUDA libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05usinglibs.html">Using CUDA libraries</a></li>
 </ul>
 
 </div>
@@ -224,12 +225,16 @@
 <li class="toctree-l2"><a class="reference internal" href="03mem_mgmt.html#_CPPv417cudaMallocManagedPPv6size_t"><code class="docutils literal notranslate"><span class="pre">cudaMallocManaged()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="03mem_mgmt.html#_CPPv410cudaMallocPPv6size_t"><code class="docutils literal notranslate"><span class="pre">cudaMalloc()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="03mem_mgmt.html#_CPPv410cudaMemcpyPvPv6size_t14cudaMemcpyKind"><code class="docutils literal notranslate"><span class="pre">cudaMemcpy()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="03mem_mgmt.html#scale-vector-example">Scale vector example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03mem_mgmt.html#vector-addition-example">Vector addition example</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="04errorhandling.html">Error handling in CUDA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usinglibs.html">Using CUDA libraries</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usinglibs.html#external-libraries-compiled-using-makefiles">External libraries compiled using Makefiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04errorhandling.html">Error handling in CUDA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="04errorhandling.html#_CPPv416cudaGetLastErrorv"><code class="docutils literal notranslate"><span class="pre">cudaGetLastError()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="04errorhandling.html#_CPPv418cudaGetErrorStringv"><code class="docutils literal notranslate"><span class="pre">cudaGetErrorString()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="05usinglibs.html">Using CUDA libraries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="05usinglibs.html#external-libraries-compiled-using-makefiles">External libraries compiled using Makefiles</a></li>
 </ul>
 </li>
 </ul>
@@ -249,6 +254,23 @@ The domains of machine learning, neural networks and solving differential equati
 </figure>
 <p>The above image also gives an intutive comparison when a computation (passenger) needs to be performed (commuted).</p>
 <p>Lastly, like a CPU, a GPU has separate structures for execution units and memory. This simply means that the process flows for using GPUs is defined differently as follows.</p>
+</section>
+<section id="what-problems-can-be-solved-by-using-gpus">
+<h1>What problems can be solved by using GPUs?<a class="headerlink" href="#what-problems-can-be-solved-by-using-gpus" title="Link to this heading">#</a></h1>
+<p>Look at the detailed thread on <a class="reference external" href="https://scicomp.stackexchange.com/questions/943/what-kinds-of-problems-lend-themselves-well-to-gpu-computing">stack exchange</a>.
+The insight as</p>
+<p><em>From a metaphorical point of view, the GPU can be seen as a person lying on a bed of nails. The person lying on top is the data and in the base of each nail there is a processor, so the nail is actually an arrow pointing from processor to memory. All nails are in a regular pattern, like a grid. If the body is well spread, it feels good (performance is good), if the body only touches some spots of the nail bed, then the pain is bad (bad performance).</em></p>
+<p>In general, whenever large amounts of data prallelism is involved, a GPU can be useful.</p>
+<ul class="simple">
+<li><p>Large scale Matrix/Vector operations: Image processing, scientific computations and machine learning.</p></li>
+<li><p>Fourier transforms. Also common in machine learning, scientific computing, and image processing.</p></li>
+<li><p>Monte Carlo simulations: Used across finance, physics, and other fields to simulate complex systems.</p></li>
+<li><p>Molecular dynamics simulations: Used in chemistry, biochemistry and physics.</p></li>
+<li><p>Computational fluid dynamics: Used in engineering, physics, and other fields.</p></li>
+<li><p>Convolutional neural networks and computer vision algorithms.</p></li>
+<li><p>Big data analytics: Clustering, classification, regression, etc.</p></li>
+<li><p>Graphics rendering: Original use-case for GPUs.</p></li>
+</ul>
 </section>
 <section id="overview-of-using-gpu-programs">
 <h1>Overview of using GPU programs<a class="headerlink" href="#overview-of-using-gpu-programs" title="Link to this heading">#</a></h1>

@@ -19,7 +19,7 @@ The documentation covers the following aspects of CUDA and GPU programming.
     02cudaparallel
     03mem_mgmt
     04errorhandling
-    usinglibs
+    05usinglibs
 
 
 
@@ -40,6 +40,29 @@ The domains of machine learning, neural networks and solving differential equati
 The above image also gives an intutive comparison when a computation (passenger) needs to be performed (commuted).
 
 Lastly, like a CPU, a GPU has separate structures for execution units and memory. This simply means that the process flows for using GPUs is defined differently as follows. 
+
+
+What problems can be solved by using GPUs?
+==========================================
+
+Look at the detailed thread on `stack exchange <https://scicomp.stackexchange.com/questions/943/what-kinds-of-problems-lend-themselves-well-to-gpu-computing>`_.
+The insight as 
+
+*From a metaphorical point of view, the GPU can be seen as a person lying on a bed of nails. The person lying on top is the data and in the base of each nail there is a processor, so the nail is actually an arrow pointing from processor to memory. All nails are in a regular pattern, like a grid. If the body is well spread, it feels good (performance is good), if the body only touches some spots of the nail bed, then the pain is bad (bad performance).*
+
+
+In general, whenever large amounts of data prallelism is involved, a GPU can be useful. 
+
+- Large scale Matrix/Vector operations: Image processing, scientific computations and machine learning. 
+- Fourier transforms. Also common in machine learning, scientific computing, and image processing.
+- Monte Carlo simulations: Used across finance, physics, and other fields to simulate complex systems.
+- Molecular dynamics simulations: Used in chemistry, biochemistry and physics.
+- Computational fluid dynamics: Used in engineering, physics, and other fields.
+- Convolutional neural networks and computer vision algorithms.
+- Big data analytics: Clustering, classification, regression, etc.
+- Graphics rendering: Original use-case for GPUs.
+
+
 
 Overview of using GPU programs
 ==============================

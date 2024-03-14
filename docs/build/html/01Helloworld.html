@@ -9,6 +9,7 @@
         <title>Getting started - CUDA on ADA 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=058af07a" />
     
@@ -160,7 +161,7 @@
 <li class="toctree-l1"><a class="reference internal" href="02cudaparallel.html">CUDA’s parallel model: Threads,Blocks and Grids.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03mem_mgmt.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04errorhandling.html">Error handling in CUDA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usinglibs.html">Using CUDA libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05usinglibs.html">Using CUDA libraries</a></li>
 </ul>
 
 </div>
@@ -359,7 +360,7 @@ nvcc<span class="w"> </span><span class="m">01</span>-hello-gpu-solution.cu<span
 ./01hello.out
 </pre></div>
 </div>
-<p>A <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> is often helpful here, as sometimes there are external libraries or flags that need to be passed to the CUDA program. An example will be discussed later in <a class="reference internal" href="usinglibs.html#external-libraries-compiled-using-makefiles"><span class="std std-ref">External libraries compiled using Makefiles</span></a>.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> is often helpful here, as sometimes there are external libraries or flags that need to be passed to the CUDA program. An example will be discussed later in <a class="reference internal" href="05usinglibs.html#external-libraries-compiled-using-makefiles"><span class="std std-ref">External libraries compiled using Makefiles</span></a>.</p>
 <p>The solution is provided below and in <code class="docutils literal notranslate"><span class="pre">01-hello-gpu-solution.cu</span></code>, as follows:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">helloCPU</span><span class="p">()</span>
