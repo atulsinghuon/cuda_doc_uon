@@ -53,6 +53,7 @@ Save the make file above by the name ``Makefile_svd`` and run the following comm
              *  * How to compile 
              *   *   nvcc -c -I/usr/local/cuda-10.1/include gesvdj_example.cpp 
              *    *   g++ -o gesvdj_example gesvdj_example.o -L/usr/local/cuda-10.1/lib64 -lcudart -lcusolver
+             *    * Taken from Princeton Unviersity's github.
              *     */
              #include <stdio.h>
              #include <stdlib.h>

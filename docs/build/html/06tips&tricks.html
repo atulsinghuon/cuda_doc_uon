@@ -2,9 +2,12 @@
 <html class="no-js" lang="en" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="#" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 --><title>Search - CUDA on ADA 1.0 documentation</title><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>Improving GPU utilization - CUDA on ADA 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -147,7 +150,7 @@
   
   <span class="sidebar-brand-text">CUDA on ADA 1.0 documentation</span>
   
-</a><form class="sidebar-search-container" method="get" action="#" role="search">
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -159,8 +162,6 @@
 <li class="toctree-l1"><a class="reference internal" href="03mem_mgmt.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04errorhandling.html">Error handling in CUDA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="05usinglibs.html">Using CUDA libraries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="06tips%26tricks.html">Improving GPU utilization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="06tips%26tricks.html#resources">Resources</a></li>
 </ul>
 
 </div>
@@ -180,7 +181,8 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -194,17 +196,40 @@
           </label>
         </div>
         <article role="main">
-          
-<noscript>
-<div class="admonition error">
-  <p class="admonition-title">Error</p>
-  <p>
-    Please activate JavaScript to enable the search functionality.
-  </p>
-</div>
-</noscript>
+          <section id="improving-gpu-utilization">
+<h1>Improving GPU utilization<a class="headerlink" href="#improving-gpu-utilization" title="Link to this heading">#</a></h1>
+<p>The general workflow of GPU program as mentioned in <a class="reference internal" href="index.html#overview-of-using-gpu-programs"><span class="std std-ref">Overview of using GPU programs</span></a> is that</p>
+<ol class="arabic simple">
+<li><p>Copy data from CPU memory to GPU memory.</p></li>
+<li><p>Transfer program. (The code that tells the processors of what to do with the device memory.)</p></li>
+<li><p>Load the GPU program , execute on streaming processors (SMs), get cached data from device (GPU) memory; write back the results.</p></li>
+<li><p>Copy the results back to the host memory.</p></li>
+</ol>
+<p>This is even more effective if the GPU transfers of memory can be minimized, while keeping the thread utilization, so that none of them sit idle due to a lack of memory.
+The code/algorithm itself should be able to run on GPU.</p>
+<p>This is usually simply done by print statements and sometimes even through profiling. See their help guidres here <a class="reference external" href="https://docs.nvidia.com/nsight-systems/">Nvidia Nsight systems</a>.
+This feature is available via the <cite>cuda-uoneasy/12.1.1</cite> module</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>nsys<span class="w"> </span>--version
+NVIDIA<span class="w"> </span>Nsight<span class="w"> </span>Systems<span class="w"> </span>version<span class="w"> </span><span class="m">2023</span>.1.2.43-32377213v0
 
-<div id="search-results"></div>
+$<span class="w"> </span>ncu<span class="w"> </span>--version
+NVIDIA<span class="w"> </span><span class="o">(</span>R<span class="o">)</span><span class="w"> </span>Nsight<span class="w"> </span>Compute<span class="w"> </span>Command<span class="w"> </span>Line<span class="w"> </span>Profiler
+Copyright<span class="w"> </span><span class="o">(</span>c<span class="o">)</span><span class="w"> </span><span class="m">2018</span>-2023<span class="w"> </span>NVIDIA<span class="w"> </span>Corporation
+Version<span class="w"> </span><span class="m">2023</span>.1.1.0<span class="w"> </span><span class="o">(</span>build<span class="w"> </span><span class="m">32678585</span><span class="o">)</span><span class="w"> </span><span class="o">(</span>public-release<span class="o">)</span>
+</pre></div>
+</div>
+<p>The gui based profiling can be done through the visualization nodes and loading the <cite>cuda-uoneasy/12.1.1</cite> module.</p>
+</section>
+<section id="resources">
+<h1>Resources<a class="headerlink" href="#resources" title="Link to this heading">#</a></h1>
+<p>Some other additional resources are mentioned below,</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://docs.nvidia.com/cuda/pdf/CUDA_C_Programming_Guide.pdf">Programming guide</a></p></li>
+<li><p><a class="reference external" href="https://docs.nvidia.com/cuda/pdf/CUDA_C_Best_Practices_Guide.pdf">Best practices guide</a>.</p></li>
+<li><p><a class="reference external" href="https://www.youtube.com/playlist?list=PL6RdenZrxrw-zNX7uuGppWETdxt_JxdMj">CUDA training series</a></p></li>
+<li><p>Oak Ridge National Laboratory <a class="reference external" href="https://www.olcf.ornl.gov/cuda-training-series/">CUDA training</a>.</p></li>
+</ol>
+</section>
 
         </article>
       </div>
@@ -241,9 +266,5 @@
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
-    <script src="_static/tabs.js?v=3030b3cb"></script>
-    
-<script src="_static/searchtools.js"></script>
-<script src="_static/language_data.js"></script>
-<script src="searchindex.js"></script></body>
+    </body>
 </html>

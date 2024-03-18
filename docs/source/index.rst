@@ -20,6 +20,7 @@ The documentation covers the following aspects of CUDA and GPU programming.
     03mem_mgmt
     04errorhandling
     05usinglibs
+    06tips&tricks
 
 
 
